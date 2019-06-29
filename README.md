@@ -16,6 +16,7 @@ This will use jQuery to make it easy to add into existing projects that are jQue
 
 ## Creating an ark
 ### Ark Object, unlinked
+<pre>
 <code>
 let myArk = $.ark({
     html: `
@@ -25,8 +26,10 @@ let myArk = $.ark({
     `,
 });
 </code>
+</pre>
 
 ### Ark Object linked to jQuery Element
+<pre>
 <code>
 $('.target').ark({
     html: `
@@ -36,8 +39,10 @@ $('.target').ark({
     `,
 });
 </code>
+</pre>
 
 ### Modify Data (short version)
+<pre>
 <code>
 myArk.mod({
     name: 'an ark object',
@@ -51,8 +56,10 @@ $('.target').mod({
     version: 'shorter syntax',
 });
 </code>
+</pre>
 
 ### Modify Data (longer version)
+<pre>
 <code>
 myArk.ark({
     data:{
@@ -69,8 +76,10 @@ $('.target').ark({
     }
 });
 </code>
+</pre>
 
 ## Events: Add an event listener and handler to each name element, with access to that element's data
+<pre>
 <code>
 let myEventArk = $.ark({
     html: `
@@ -83,26 +92,32 @@ let myEventArk = $.ark({
     },
 });
 </code>
+</pre>
 
 ### What is special about this? 
 
 Why not use $('.name').on('click', function(){})? The reason is we can access the data.
+<pre>
 <code>
 $('.name').click(); // expected output: 'an ark object'
 </code>
+</pre>
 
 With jQuery alone, to get expected output of 'an ark object', we would need to use 
 data-attributes and an event handler to read from it, or rely on reading the text, etc
 ie: <div class="name" data-name="an ark object">an ark object<div>
 
 With ark:
+<pre>
 <code>
 $('.target').mod({name: 'a modified ark object'});
 $('.name').click(); // expected output: 'a modified ark object'
 </code>
+</pre>
 
 ## Ark with Multiple Child Elements
 
+<pre>
 <code>
 let myArk = $.ark({
     html: `
@@ -129,12 +144,14 @@ let myArk = $.ark({
     ]
 });
 </code>
+</pre>
 
 ## Modifying data
 
 ### Let's say you have initial data, then modify it, then want to rerender the list
 
 The application has created some data:
+<pre>
 <code>
 let data = [
     {
@@ -159,13 +176,17 @@ let html = `
     <div class="version">{{version}}</div>
 `;
 </code>
+</pre>
 
 Create the ark
+<pre>
 <code>
 $('.list').ark({html, data});
 </code>
+</pre>
 
 The application modified the data!
+<pre>
 <code>
 data.push({
     name: 'newcomer',
@@ -173,23 +194,31 @@ data.push({
     version: 'a version',
 });
 </code>
+</pre>
 
 Just update the data
+<pre>
 <code>
 $('.list').mod(data);
 </code>
+</pre>
 
 The application keeps modifying things!
+<pre>
 <code>
 data[2].name = "a new name given";
 </code>
+</pre>
 
 Just keep updating it
+<pre>
 <code>
 $('.list').mod(data);
 </code>
+</pre>
 
 What if we don't like the 2 step process?
+<pre>
 <code>
 $('.list').mod().push({
     name: 'directly added',
@@ -199,11 +228,13 @@ $('.list').mod().push({
 
 $('.list').mod()[3].name = 'lazy, unsafe name change';
 </code>
+</pre>
 
 ## Nested data, such as lists
 
 ### The challenge: I like this, but what about nested arks?
 
+<pre>
 <code>
 $('.list-section').ark({
     html: `
@@ -235,16 +266,20 @@ $('.list-section').ark({
     },
 });
 </code>
+</pre>
 
 And modifying its data:
+<pre>
 <code>
 let list = $('.list-section').mod().list;
 list.mod().push({
     name: 'fourth item'
 });
 </code>
+</pre>
 
 Or with a different syntax which supports modifying parent data as well
+<pre>
 <code>
 $('.list-section').mod({
     header: 'A new item will be added to the list below',
@@ -253,8 +288,10 @@ $('.list-section').mod({
     })
 });
 </code>
+</pre>
 
 ### What if my data model doesn't want to use ark objects in them?
+<pre>
 <code>
 let data = {
     header: 'A list with items',
@@ -271,8 +308,10 @@ let data = {
     ]
 };
 </code>
+</pre>
 
 So i want to do this:
+<pre>
 <code>
 $('.list-section').ark({
     html: `
@@ -297,8 +336,10 @@ $('.list-section').ark({
     }
 });
 </code>
+</pre>
 
 Now you can modify the list data without worrying about changing your data model to know about arks:
+<pre>
 <code>
 let newList = [
     {
@@ -316,10 +357,12 @@ $('.list-section').mod({
     list: newList
 });
 </code>
+</pre>
 
 ## Summary example
 
 ### Let's put it all together:
+<pre>
 <code>
 let app = $.ark({
     html: `
@@ -369,10 +412,13 @@ let app = $.ark({
     }
 });
 </code>
+</pre>
 
 Todo: updating based on model above
+<pre>
 <code>
 app.mod({
     list: [{}]
 });
 </code>
+</pre>
