@@ -46,9 +46,29 @@ $('#nest').ark({
         },
     ],
     onClick: {
-        ".app-component-nested": (event, data)=>console.log(data.name)
+        ".app-component-nested": (event, data)=>console.log(data)
     }
 });
+
+const Tests = {
+    updateNest() {
+        $('#nest').mod([
+            {
+                name: 'Nested item 1 modified',
+                type: 'Linked',
+            },
+            {
+                name: 'Nested item 2 modified',
+                type: 'Linked',
+            },
+            {
+                name: 'Nested item 3 modified',
+                type: 'Linked',
+            },
+        ]);
+    }
+}
+
 
 /* Can API be one call, as below? Instead of ark() and mod() ?
 $(el).ark({

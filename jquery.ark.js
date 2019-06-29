@@ -3,37 +3,82 @@
     let arkCount = 0;
 
     class Ark {
-        constructor($el, props){
-            // console.log(props);
+        constructor($el, props, first){
+            this.props = props;
             this.html = props.html;
+
             this._data = props.data;
             this.render = this.render.bind(this);
             this.processHTML = this.processHTML.bind(this);
             this.writeHTML = this.writeHTML.bind(this);
             this.processProps = this.processProps.bind(this);
+            this.processArks = this.processArks.bind(this);
+            this.dataReadOnly = this.dataReadOnly.bind(this);
+            this.findFirstArk = this.findFirstArk.bind(this);
+
             this.$el = $el;
+            this.arks = this.processArks(this._data);
             this.writeHTML(this.processHTML(this._data));
-            this.processProps(props);
+            if (first) {
+                this.processProps(props);
+            }
         }
         processProps(data) {
-            // console.log(data);
-            if (data.onClick) {
-                let keys = Object.keys(data.onClick);
-                for (let i = 0; i < keys.length; i++) {
-                    let selector = keys[i];
-                    console.log(selector);
-                    $(this.$el).on('click', selector, (event)=> {
+            let process = (ark) => {
+                let data = ark.props;
+                if (data.onClick) {
+                    let handler = (event, action) => {
+                        let _ark = this.findFirstArk(event.target);
                         console.log(event.target);
-                        data.onClick[selector](event, this._data);
-                    });
+                        if (_ark.dataReadOnly().length) {
+                            $(this.$el).children().each((i, child)=>{
+                                
+                                if (event.target.isSameNode(child)) {
+                                    action(event, this.dataReadOnly()[i]);
+                                } 
+
+                            });
+                        } else {
+                            action(event, this.dataReadOnly());
+                        }
+
+                    }
+                
+                    let keys = Object.keys(data.onClick);
+                    for (let i = 0; i < keys.length; i++) {
+                        let selector = keys[i];
+                        $(this.$el).on(`click`, selector, () => handler(event, data.onClick[selector]));
+                    }
                 }
             }
+            if (this.arks.length) {
+                for (let i = 0; i < this.arks.length; i++) {
+                    let ark = this.arks[i];
+                    process(ark);
+                }
+            } else {
+                process(this);
+            }
+        }
+        findFirstArk(element){
+            let ark = null;
+            if ($.data(element, "ark")) {
+                ark = $.data(element, "ark");
+            } else {
+                if (element.parentNode) {
+                    ark = this.findFirstArk(element.parentNode);
+                }
+            }
+            return ark;
         }
         ark(props){
             // console.log('props: ' + props);
         }
         mod(data) {
             // console.log('data: ' + data);
+        }
+        dataReadOnly(){
+            return this._data;
         }
         set data(_data){
             this._data = _data;
@@ -43,8 +88,23 @@
         get data(){
             return this._data;
         }
+        processArks(data) {
+            // return [];
+            let arks = [];
+            if (this._data && this._data.length) {
+                for (let i = 0; i < this._data.length; i++) {
+                    // let props = Object.assign({}, this.props);
+                    // props.data = this._data[i];
+                    // let ark = new Ark(this.$el, props, false);
+                    // arks.push(ark);
+                }
+            }
+            return arks;
+        }
+        /* This will be refactored to return an Ark object */
         processHTML(data) {
             let html = '';
+            let els = [];
             if (this._data && this._data.length) {
                 for (let i = 0; i < this._data.length; i++) {
                     html += this.render(this.html, this._data[i]);
@@ -56,6 +116,7 @@
         }
         writeHTML(html){
             $(this.$el).html(html);
+            // $(this.$el).html('').append(html);
         }
         render(html, data){
             const _regex = /{{[\w\s:\|\.]+}}/g;
@@ -111,7 +172,7 @@
             if ($.data($el, "ark")) {
                 console.log('ark is already set. we need to modify it');
             } else {
-                ark = new Ark($el, props);
+                ark = new Ark($el, props, true);
                 $els[`ark${arkCount}`] = ark;
                 arkCount++;
                 $.data($el, "ark", ark);
@@ -140,7 +201,6 @@
             let exists = false;
             $els.forEach((el) =>{
                 if ($el.isSameNode(el)) {
-                    console.log('it is there already');
                     $el = el;
                     exists = true;
                 }
