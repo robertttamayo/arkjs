@@ -45,68 +45,95 @@
                     html = html.replace(match, '');
                 }
             }
-            this.$el.html(html);
+            $(this.$el).html(html);
         }
     }
     
     $.fn.ark = function(props) {
         console.log(this);
-        let $el = this;
-        let exists = false;
-        $els.forEach((el) =>{
-            if (this.is(el)) {
-                console.log('it is there already');
-                $el = el;
-                exists = true;
+        if (this.length) {
+            console.log(this.length);
+            for (let i = 0; i < this.length; i++) {
+                initArk(this.get(i));
             }
-        });
-        if (!exists){
-            $els.push(this);
-        }
-        if ($.data($el, "arkObject")) {
-            console.log('ark is already set. we need to modify it');
+            // this.each(($el) => initArk( $($el) )); 
         } else {
-            ark = new Ark($el, props);
-            $els[`ark${arkCount}`] = ark;
-            arkCount++;
-            $.data($el, "arkObject", ark);
-            // console.log($.data($(this), "arkObject"));
+            console.log('else');
+            initArk(this);
         }
-        if (props.html) {
+        console.log('ark count: ' + $els.length);
 
-        }
-        if (props.data) {
-
+        function initArk($el) {
+            console.log($el);
+            let exists = false;
+            $els.forEach((el) =>{
+                if ($el.isSameNode(el)) {
+                    $el = el;
+                    exists = true;
+                }
+                // if ($el.is(el)) {
+                //     $el = el;
+                //     exists = true;
+                // }
+            });
+            if (!exists){
+                $els.push($el);
+            }
+            if ($.data($el, "ark")) {
+                console.log('ark is already set. we need to modify it');
+            } else {
+                ark = new Ark($el, props);
+                $els[`ark${arkCount}`] = ark;
+                arkCount++;
+                $.data($el, "ark", ark);
+                // console.log($.data($(this), "ark"));
+            }
+            if (props.html) {
+    
+            }
+            if (props.data) {
+    
+            }
         }
     }
 
     $.arks = {};
     $.fn.mod = function(data) {
-        console.log(this);
-        let $el = this;
-        let exists = false;
-        $els.forEach((el) =>{
-            if (this.is(el)) {
-                console.log('it is there already');
-                $el = el;
-                exists = true;
+        
+        if (this.length) {
+            for (let i = 0; i < this.length; i++) {
+                modArk(this.get(i));
             }
-        });
-        if (exists){
-            let ark = $.data($el, "arkObject");
-            let arkData = ark.data;
-            let keys = Object.keys(data);
-            keys.forEach((key)=>{
-                arkData[key] = data[key];
-            });
-            ark.data = arkData;
-            // ark.render(ark.html, arkData);
-            console.log(ark);
-            console.log(arkData);
         } else {
-            console.error("There is no ark for that element");
-            // $.data(this, "arkObject", {html: ''});
-            console.log($.data(this, "arkObject"));
+            modArk(this);
+        }
+
+        function modArk($el) {
+            console.log('mod', $el);
+            let exists = false;
+            $els.forEach((el) =>{
+                if ($el.isSameNode(el)) {
+                    console.log('it is there already');
+                    $el = el;
+                    exists = true;
+                }
+            });
+            if (exists){
+                let ark = $.data($el, "ark");
+                let arkData = ark.data;
+                let keys = Object.keys(data);
+                keys.forEach((key)=>{
+                    arkData[key] = data[key];
+                });
+                ark.data = arkData;
+                // ark.render(ark.html, arkData);
+                console.log(ark);
+                console.log(arkData);
+            } else {
+                console.error("There is no ark for that element");
+                // $.data(this, "ark", {html: ''});
+                console.log($.data(this, "ark"));
+            }
         }
     }
 }(jQuery));
