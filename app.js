@@ -7,6 +7,9 @@ $('#app').ark({
     data: {
         name: 'An Ark Object',
         type: 'Linked',
+    },
+    onClick: {
+        ".name": (event, data)=>console.log(data.name)
     }
 });
 
@@ -18,6 +21,9 @@ $('.app-component').ark({
     data: {
         name: 'A component',
         type: 'Linked',
+    },
+    onClick: {
+        ".name": (event, data)=>console.log(data.name)
     }
 });
 
@@ -38,7 +44,10 @@ $('#nest').ark({
             name: 'Nested item 3',
             type: 'Linked',
         },
-    ]
+    ],
+    onClick: {
+        ".app-component-nested": (event, data)=>console.log(data.name)
+    }
 });
 
 /* Can API be one call, as below? Instead of ark() and mod() ?

@@ -5,7 +5,7 @@ body {
     color: #ff4500;
     font-family: sans-serif;
 }
-#app {
+#app, #nest {
     padding: 20px;
     border: 2px solid #4dff7d;
     border: 2px solid #00c335;
@@ -15,7 +15,7 @@ body {
     text-align: center;
     margin-bottom: 20px;
 }
-.app-component, .app-component-nested, #nest {
+.app-component, .app-component-nested {
     padding: 20px;
     border: 2px solid #4dff7d;
     border: 2px solid #ff4500;

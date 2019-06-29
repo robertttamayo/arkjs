@@ -4,20 +4,36 @@
 
     class Ark {
         constructor($el, props){
-            console.log(props);
+            // console.log(props);
             this.html = props.html;
             this._data = props.data;
             this.render = this.render.bind(this);
             this.processHTML = this.processHTML.bind(this);
             this.writeHTML = this.writeHTML.bind(this);
+            this.processProps = this.processProps.bind(this);
             this.$el = $el;
             this.writeHTML(this.processHTML(this._data));
+            this.processProps(props);
+        }
+        processProps(data) {
+            // console.log(data);
+            if (data.onClick) {
+                let keys = Object.keys(data.onClick);
+                for (let i = 0; i < keys.length; i++) {
+                    let selector = keys[i];
+                    console.log(selector);
+                    $(this.$el).on('click', selector, (event)=> {
+                        console.log(event.target);
+                        data.onClick[selector](event, this._data);
+                    });
+                }
+            }
         }
         ark(props){
-            console.log('props: ' + props);
+            // console.log('props: ' + props);
         }
         mod(data) {
-            console.log('data: ' + data);
+            // console.log('data: ' + data);
         }
         set data(_data){
             this._data = _data;
