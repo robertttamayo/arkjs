@@ -8,8 +8,10 @@
             this.html = props.html;
             this._data = props.data;
             this.render = this.render.bind(this);
+            this.processHTML = this.processHTML.bind(this);
+            this.writeHTML = this.writeHTML.bind(this);
             this.$el = $el;
-            this.render(this.html, this.data);
+            this.writeHTML(this.processHTML(this._data));
         }
         ark(props){
             console.log('props: ' + props);
@@ -19,10 +21,25 @@
         }
         set data(_data){
             this._data = _data;
-            this.render(this.html, this._data);
+            
+            this.writeHTML(this.processHTML(this._data));
         }
         get data(){
             return this._data;
+        }
+        processHTML(data) {
+            let html = '';
+            if (this._data && this._data.length) {
+                for (let i = 0; i < this._data.length; i++) {
+                    html += this.render(this.html, this._data[i]);
+                }
+            } else {
+                html += this.render(this.html, this._data);
+            }
+            return html;
+        }
+        writeHTML(html){
+            $(this.$el).html(html);
         }
         render(html, data){
             const _regex = /{{[\w\s:\|\.]+}}/g;
@@ -45,26 +62,22 @@
                     html = html.replace(match, '');
                 }
             }
-            $(this.$el).html(html);
+            return html;
         }
     }
     
     $.fn.ark = function(props) {
-        console.log(this);
         if (this.length) {
-            console.log(this.length);
             for (let i = 0; i < this.length; i++) {
-                initArk(this.get(i));
+                initArk(this.get(i), i);
             }
             // this.each(($el) => initArk( $($el) )); 
         } else {
-            console.log('else');
-            initArk(this);
+            // nothing selected
+            console.log('nothing selected');
         }
-        console.log('ark count: ' + $els.length);
 
-        function initArk($el) {
-            console.log($el);
+        function initArk($el, index) {
             let exists = false;
             $els.forEach((el) =>{
                 if ($el.isSameNode(el)) {
@@ -86,7 +99,6 @@
                 $els[`ark${arkCount}`] = ark;
                 arkCount++;
                 $.data($el, "ark", ark);
-                // console.log($.data($(this), "ark"));
             }
             if (props.html) {
     
@@ -109,7 +121,6 @@
         }
 
         function modArk($el) {
-            console.log('mod', $el);
             let exists = false;
             $els.forEach((el) =>{
                 if ($el.isSameNode(el)) {
@@ -126,13 +137,8 @@
                     arkData[key] = data[key];
                 });
                 ark.data = arkData;
-                // ark.render(ark.html, arkData);
-                console.log(ark);
-                console.log(arkData);
             } else {
                 console.error("There is no ark for that element");
-                // $.data(this, "ark", {html: ''});
-                console.log($.data(this, "ark"));
             }
         }
     }
