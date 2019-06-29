@@ -14,7 +14,9 @@ This will use jQuery to make it easy to add into existing projects that are jQue
 
 # API
 
-/* Ark Object, unlinked */
+## Creating an ark
+### Ark Object, unlinked
+
 let myArk = $.ark({
     html: `
         <div class="name">{{name}}</div>
@@ -23,7 +25,7 @@ let myArk = $.ark({
     `,
 });
 
-/* Ark Object linked to jQuery Element */
+### Ark Object linked to jQuery Element
 $('.target').ark({
     html: `
         <div class="name">{{name}}</div>
@@ -32,7 +34,7 @@ $('.target').ark({
     `,
 });
 
-/* Modify Data (short version) */
+### Modify Data (short version)
 myArk.data({
     name: 'an ark object',
     type: 'unlinked',
@@ -45,7 +47,7 @@ $('.target').data({
     version: 'shorter syntax',
 });
 
-/* Modify Data (longer version) */
+### Modify Data (longer version)
 myArk.ark({
     data:{
         name: 'an ark object',
@@ -61,7 +63,7 @@ $('.target').ark({
     }
 });
 
-/* Events: Add an event listener and handler to each name element, with access to that element's data */
+## Events: Add an event listener and handler to each name element, with access to that element's data
 let myEventArk = $.ark({
     html: `
         <div class="name">{{name}}</div>
@@ -72,8 +74,11 @@ let myEventArk = $.ark({
         ".name": (event) => console.log(event.data.name), // if name is 'an ark object', it will return 'an ark object'
     },
 });
-/* What is special about this? Why not use $('.name').on('click', function(){}) ?
-The reason is we can access the data. */
+
+### What is special about this? 
+
+Why not use $('.name').on('click', function(){})? The reason is we can access the data.
+
 $('.name').trigger('click'); // expected output: 'an ark object'
                             // with jQuery alone, to get expected output of 'an ark object', we would need to use 
                             // data-attributes and an event handler to read from it, or rely on reading the text, etc
@@ -81,7 +86,9 @@ $('.name').trigger('click'); // expected output: 'an ark object'
 $('.target').data({name: 'a modified ark object'});
 $('.name').trigger('click'); // expected output: 'a modified ark object'
 
-/* Multiple Objects */
+## Ark with Multiple Child Elements
+
+<pre>
 let myArk = $.ark({
     html: `
         <div class="name">{{name}}</div>
@@ -106,10 +113,12 @@ let myArk = $.ark({
         },
     ]
 });
+</pre>
 
-/* Let's say you have initial data, then modify it, then want to rerender the list */
+### Let's say you have initial data, then modify it, then want to rerender the list
 
-// application has created some data
+The application has created some data:
+<pre>
 let data = [
     {
         name: 'an ark object',
@@ -132,26 +141,39 @@ let html = `
     <div class="type">{{type}}</div>
     <div class="version">{{version}}</div>
 `;
-// create the ark
-$('.list').ark({html, data});
+</pre>
 
-// the application modified the data!
+Create the ark
+<pre>
+$('.list').ark({html, data});
+</pre>
+
+The application modified the data!
+<pre>
 data.push({
     name: 'newcomer',
     type: 'ark element',
     version: 'a version',
 });
+</pre>
 
-// just update the data
+Just update the data
+<pre>
 $('.list').data(data);
+</pre>
 
-// the application keeps modifying things!
+The application keeps modifying things!
+<pre>
 data[2].name = "a new name given";
+</pre>
 
-// just keep updating it
+Just keep updating it
+<pre>
 $('.list').data(data);
+</pre>
 
-// what if we don't like the 2 step process?
+What if we don't like the 2 step process?
+<pre>
 $('.list').data().push({
     name: 'directly added',
     type: 'some type we needed',
@@ -159,8 +181,10 @@ $('.list').data().push({
 });
 
 $('.list').data()[3].name = 'lazy, unsafe name change';
+</pre>
 
-// the challenge: I like this, but what about nested arks?
+The challenge: I like this, but what about nested arks?
+<pre>
 $('.list-section').ark({
     html: `
         <div class="list-header">{{header}}</div>
@@ -190,22 +214,28 @@ $('.list-section').ark({
         })
     },
 });
+</pre>
 
-// and modifying its data:
+And modifying its data:
+<pre>
 let list = $('.list-section').data().list;
 list.data().push({
     name: 'fourth item'
 });
+</pre>
 
-// or with a different syntax which supports modifying parent data as well
+Or with a different syntax which supports modifying parent data as well
+<pre>
 $('.list-section').data({
     header: 'A new item will be added to the list below',
     list: $.data().push({
         name: 'fourth item'
     })
 });
+</pre>
 
-// what if my data model doesn't want to use ark objects in them?
+What if my data model doesn't want to use ark objects in them?
+<pre>
 let data = {
     header: 'A list with items',
     list: [
@@ -220,7 +250,10 @@ let data = {
         },
     ]
 };
-// so i want to do this:
+</pre>
+
+So i want to do this:
+<pre>
 $('.list-section').ark({
     html: `
         <div class="list-header">{{header}}</div>
@@ -243,8 +276,10 @@ $('.list-section').ark({
         }),
     }
 });
+</pre>
 
-// now you can modify the list data without worrying about changing your data model to know about arks:
+Now you can modify the list data without worrying about changing your data model to know about arks:
+<pre>
 let newList = [
     {
         name: 'replacement #1'
@@ -260,9 +295,10 @@ $('.list-section').data({
     header: `A list that doesn't know about arks`,
     list: newList
 });
+</pre>
 
-// let's put it all together:
-
+Let's put it all together:
+<pre>
 let app = $.ark({
     html: `
         <div class="my-app">
@@ -310,6 +346,11 @@ let app = $.ark({
         }),
     }
 });
+</pre>
+
+Todo:
+
 app.data({
     list: [{}]
 });
+
