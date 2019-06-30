@@ -65,7 +65,21 @@ const Tests = {
                 name: 'Nested item 3 modified',
                 type: 'Linked',
             },
+            {
+                name: 'Nested item 4 modified',
+                type: 'Linked',
+            },
+            {
+                name: 'Nested item 5 modified',
+                type: 'Linked',
+            },
         ]);
+    },
+    nameChange(){
+        $('#app').mod({
+            name: 'changed'
+        });
+        $('#app .name').click();
     }
 }
 

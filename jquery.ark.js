@@ -2,6 +2,44 @@
     let $els = [];
     let arkCount = 0;
 
+    class Data {
+        constructor(ark, data) {
+            let keys = Object.keys(data);
+            this.data = data;
+            this.ark = ark;
+            this.accessor = this.accessor.bind(this);
+            for (let i = 0; i < keys.length; i++) {
+                let key = keys[i];
+                Object.defineProperty(this, key, {
+                    get() {return data[key]},
+                    set(value) {
+                        let _data = ark.data;
+                        _data[key] = value;
+                        ark.data = _data;
+                    }
+                });
+                // this[key] = this.accessor(key);
+            }
+            console.log(this);
+        }
+        accessor(key) {
+            console.log(key);
+            return (value) => {
+                console.log('accessor called');
+                if (value) {
+                    console.log('value: ' + value);
+                    this.data[key] = value;
+                    let _data = ark.data;
+                    _data[key] = value;
+                    ark.data = _data;
+                    // ark.data[key] = value;
+                } else {
+                    console.log('else' + value);
+                    return this.data[key];
+                }
+            }
+        }
+    }
     class Ark {
         constructor($el, props, first){
             this.props = props;
@@ -82,10 +120,12 @@
         }
         set data(_data){
             this._data = _data;
-            
+            console.log(_data.name);
+            console.log('changed');
             this.writeHTML(this.processHTML(this._data));
         }
         get data(){
+            console.log('accessing data');
             return this._data;
         }
         processArks(data) {
@@ -105,12 +145,12 @@
         processHTML(data) {
             let html = '';
             let els = [];
-            if (this._data && this._data.length) {
-                for (let i = 0; i < this._data.length; i++) {
-                    html += this.render(this.html, this._data[i]);
+            if (data && data.length) {
+                for (let i = 0; i < data.length; i++) {
+                    html += this.render(this.html, data[i]);
                 }
             } else {
-                html += this.render(this.html, this._data);
+                html += this.render(this.html, data);
             }
             return html;
         }
@@ -188,16 +228,17 @@
 
     $.arks = {};
     $.fn.mod = function(data) {
-        
+
         if (this.length) {
             for (let i = 0; i < this.length; i++) {
-                modArk(this.get(i));
+                return modArk(this.get(i));
             }
         } else {
-            modArk(this);
+            return modArk(this);
         }
 
         function modArk($el) {
+
             let exists = false;
             $els.forEach((el) =>{
                 if ($el.isSameNode(el)) {
@@ -208,11 +249,16 @@
             if (exists){
                 let ark = $.data($el, "ark");
                 let arkData = ark.data;
+                if (data) {} else {
+                    data = {};
+                }
                 let keys = Object.keys(data);
                 keys.forEach((key)=>{
                     arkData[key] = data[key];
                 });
                 ark.data = arkData;
+                let dataObj = new Data(ark, ark.data);
+                return dataObj;
             } else {
                 console.error("There is no ark for that element");
             }
